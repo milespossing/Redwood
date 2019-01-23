@@ -12,5 +12,6 @@ namespace RedWood.Test.TestObjects
         public List<int> ints => new List<int>(){1,2,3,4,5,6,7};
         [Scalar("Smaller class")]
         public SecondSimpleClass smaller => new SecondSimpleClass();
+        [Scalar("Some other kind of scalar")] public string scalar => "This is some data";
     }
 }

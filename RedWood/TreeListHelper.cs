@@ -50,9 +50,19 @@ namespace RedWood
             foreach (var prop in props.Where(p => p.IsDefined(typeof(ScalarAttribute),false)))
             {
                 var dnAttribute = (ScalarAttribute) Attribute.GetCustomAttribute(prop, typeof(ScalarAttribute));
+                object propertyValue = prop.GetValue(o);
+                string scalarPropertyListString;
+                if (propertyValue.GetType().IsDefined(typeof(TreeNodeAttribute), false))
+                {
+                    scalarPropertyListString = "";
+                }
+                else
+                {
+                    scalarPropertyListString = $": {propertyValue.ToString()}";
+                }
                 var val = prop.GetValue(o);
-                var node = treeList.AppendNode(new[] {$"{dnAttribute.ValueName}: {val}", o}, parent);
-                CreateWithAttributes(val, node);
+                var node = treeList.AppendNode(new[] {$"{dnAttribute.ValueName}{scalarPropertyListString}", o}, parent);
+                CreateWithAttributes(val, node, true);
             }
         }
 
