@@ -53,8 +53,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ReflectionTests.cs" />
     <Compile Include="TestObjects\SecondSimpleClass.cs" />
     <Compile Include="TestObjects\SimpleClassTest.cs" />
+    <Compile Include="TestObjects\SimpleThirdClass.cs" />
     <Compile Include="TreeListHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

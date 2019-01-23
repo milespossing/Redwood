@@ -7,6 +7,7 @@ using DevExpress.XtraTreeList;
 using DevExpress.XtraTreeList.Columns;
 using DevExpress.XtraTreeList.Nodes;
 using RedWood.Attributes;
+using RedWood.Utilities;
 
 namespace RedWood
 {
@@ -22,11 +23,7 @@ namespace RedWood
 
         public TreeListNode CreateWithAttributes(object o, TreeListNode parent = null, bool rootLoaded = false)
         {
-            var dnAttribute =
-                o.GetType().GetCustomAttributes(typeof(TreeNodeAttribute), true).FirstOrDefault() as TreeNodeAttribute;
-            string listValue;
-            if (dnAttribute != null) listValue = dnAttribute.ListValue;
-            else listValue = o.ToString();
+            string listValue = Reflection.GetListValue(o);
             TreeListNode root;
             if (!rootLoaded)
                 root = treeList.AppendNode(new[] {listValue, o}, parent);
@@ -51,17 +48,13 @@ namespace RedWood
             {
                 var dnAttribute = (ScalarAttribute) Attribute.GetCustomAttribute(prop, typeof(ScalarAttribute));
                 object propertyValue = prop.GetValue(o);
-                string scalarPropertyListString;
-                if (propertyValue.GetType().IsDefined(typeof(TreeNodeAttribute), false))
+                string scalarPropertyListString = "";
+                if (!propertyValue.GetType().IsDefined(typeof(TreeNodeAttribute), false))
                 {
-                    scalarPropertyListString = "";
-                }
-                else
-                {
-                    scalarPropertyListString = $": {propertyValue.ToString()}";
+                    scalarPropertyListString = $"{propertyValue.ToString()}";
                 }
                 var val = prop.GetValue(o);
-                var node = treeList.AppendNode(new[] {$"{dnAttribute.ValueName}{scalarPropertyListString}", o}, parent);
+                var node = treeList.AppendNode(new[] {$"{dnAttribute.ValueName}{(dnAttribute.ValueName == null || scalarPropertyListString == "" ? "" : ": ")}{scalarPropertyListString}", o}, parent);
                 CreateWithAttributes(val, node, true);
             }
         }
