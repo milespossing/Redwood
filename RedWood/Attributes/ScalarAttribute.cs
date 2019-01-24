@@ -8,9 +8,9 @@ namespace RedWood.Attributes
         public string ValueName;
         public ScalarAttribute() { }
 
-        public ScalarAttribute(string attributeName)
+        public ScalarAttribute(string valueName)
         {
-            ValueName = attributeName;
+            ValueName = valueName;
         }
     }
 }

@@ -80,10 +80,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RedWood.Test\RedWood.Test.csproj">
-      <Project>{8edf4429-251a-416d-bb68-93f227191bcf}</Project>
-      <Name>RedWood.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RedWood\RedWood.csproj">
       <Project>{4ee9fb9e-3cb5-4f43-9d6d-b168f7b9797e}</Project>
       <Name>RedWood</Name>

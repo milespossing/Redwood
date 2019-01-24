@@ -65,10 +65,10 @@
     <Compile Include="Attributes\ListValueAttribute.cs" />
     <Compile Include="Attributes\ScalarAttribute.cs" />
     <Compile Include="Attributes\TreeNodeAttribute.cs" />
-    <Compile Include="Interfaces\ITreeListView.cs" />
-    <Compile Include="Interfaces\ITreeNode.cs" />
     <Compile Include="Attributes\SublistAttribute.cs" />
-    <Compile Include="TreeListController.cs" />
+    <Compile Include="Node.cs" />
+    <Compile Include="OmniNode.cs" />
+    <Compile Include="RedNodeEventClickArgs.cs" />
     <Compile Include="TreeListHelper.cs" />
     <Compile Include="TreeListView.cs">
       <SubType>UserControl</SubType>
@@ -85,6 +85,9 @@
     <EmbeddedResource Include="TreeListView.resx">
       <DependentUpon>TreeListView.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
