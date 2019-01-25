@@ -8,14 +8,14 @@ namespace RedWood
         public Guid Id { get; } = Guid.NewGuid();
         public TreeListNode TreeNode { get; set; }
 
-        private Node _node;
-        public Node Node
+        private RedNode _redNode;
+        public RedNode RedNode
         {
-            get => _node;
+            get => _redNode;
             set
             {
-                _node = value;
-                _node.OmniNode = this;
+                _redNode = value;
+                _redNode.OmniNode = this;
             }
         }
     }

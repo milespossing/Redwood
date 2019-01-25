@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using DevExpress.XtraTreeList;
@@ -18,30 +19,48 @@ namespace RedWood
 
         public TreeListHelper(TreeList treeList)
         {
-            this.treeList = treeList;
-            if (treeList.Columns.FirstOrDefault(c => c.FieldName == "Id") == null)
+            try
             {
-                var column = new TreeListColumn();
-                column.FieldName = "Id";
-                treeList.Columns.Add(column);
+                this.treeList = treeList;
+                if (treeList.Columns.FirstOrDefault(c => c.FieldName == "Id") == null)
+                {
+                    var column = new TreeListColumn();
+                    column.FieldName = "Id";
+                    treeList.Columns.Add(column);
+                }
+                if (treeList.Columns.FirstOrDefault(c => c.FieldName == "Data") == null)
+                {
+                    var column = new TreeListColumn();
+                    column.FieldName = "Data";
+                    treeList.Columns.Add(column);
+                }
             }
-            if (treeList.Columns.FirstOrDefault(c => c.FieldName == "Data") == null)
+            catch (Exception ex)
             {
-                var column = new TreeListColumn();
-                column.FieldName = "Data";
-                treeList.Columns.Add(column);
+                Trace.TraceError($"Error while creating helper:{ex}");
             }
         }
 
         public void CreateWithAttributes(object o, OmniNode parent = null, bool rootLoaded = false)
         {
-            string listValue = Reflection.GetListValue(o);
-            OmniNode root;
-            if (!rootLoaded)
-                root = AppendNode(o, parent);
-            else root = parent;
-            GetSublists(o, o.GetType().GetProperties(), root);
-            GetScalars(o, o.GetType().GetProperties(), root);
+            try
+            {
+                OmniNode root;
+                if (!rootLoaded)
+                    root = AppendNode(o, parent);
+                else root = parent;
+                GetSublists(o, o.GetType().GetProperties(), root);
+                GetScalars(o, o.GetType().GetProperties(), root);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"Error while creating nodes:{ex}");
+            }
+        }
+
+        public RedNode GetNode(TreeListNode treeNode)
+        {
+            return Nodes.FirstOrDefault(on => on.TreeNode == treeNode)?.RedNode;
         }
 
         private OmniNode AppendNode(object data, OmniNode parent = null)
@@ -51,10 +70,9 @@ namespace RedWood
             TreeListNode treeListNode = treeList.AppendNode(new[] {listValue}, parent?.TreeNode);
             treeListNode.SetValue("Id", output.Id);
             treeListNode.Tag = data;
-            Node outNode = new Node();
-            outNode.Data = data;
-            outNode.Parent = parent?.Node;
-            output.Node = outNode;
+            RedNode outRedNode = new RedNode(ref data);
+            outRedNode.Parent = parent?.RedNode;
+            output.RedNode = outRedNode;
             output.TreeNode = treeListNode;
             Nodes.Add(output);
             return output;
@@ -66,10 +84,9 @@ namespace RedWood
             TreeListNode treeListNode = treeList.AppendNode(new object[] { listValue }, parent?.TreeNode);
             treeListNode.SetValue("Id", output.Id);
             treeListNode.Tag = data;
-            Node outNode = new Node();
-            outNode.Data = data;
-            outNode.Parent = parent?.Node;
-            output.Node = outNode;
+            var objectList = (object) data;
+            RedNode outRedNode = new RedNode(ref objectList) {Parent = parent?.RedNode};
+            output.RedNode = outRedNode;
             output.TreeNode = treeListNode;
             Nodes.Add(output);
             return output;
@@ -82,10 +99,10 @@ namespace RedWood
             TreeListNode treeListNode = treeList.AppendNode(new[] { listValue }, parent?.TreeNode);
             treeListNode.SetValue("Id", output.Id);
             treeListNode.Tag = data;
-            Node outNode = new Node();
-            outNode.Data = prop.GetValue(data);
-            outNode.Parent = parent?.Node;
-            output.Node = outNode;
+            object value = prop.GetValue(data);
+            RedNode outRedNode = new RedNode(ref value);
+            outRedNode.Parent = parent?.RedNode;
+            output.RedNode = outRedNode;
             output.TreeNode = treeListNode;
             Nodes.Add(output);
             return output;
@@ -104,7 +121,7 @@ namespace RedWood
             IList objects = (IList) prop.GetValue(o);
             var attribute = (SublistAttribute) Attribute.GetCustomAttribute(prop, typeof(SublistAttribute));
             string listValue = attribute.Name;
-            OmniNode listHead = AppendListNode(listValue,objects, parent);
+            OmniNode listHead = AppendListNode(listValue, objects, parent);
             if (objects == null) return;
             if (objects.Count == 0) return;
             var type = objects[0].GetType();
